@@ -1,7 +1,7 @@
 apache-authtkt-ruby
 ===================
 
-Ruby client for mod_auth_tkt.
+Ruby client for mod_auth_tkt (http://www.openfusion.com.au/labs/mod_auth_tkt/).
 
 Inspired by http://meso.net/mod_auth_tkt yet implemented as a full class with
 test coverage.
