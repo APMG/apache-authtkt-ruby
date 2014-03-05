@@ -23,6 +23,12 @@ describe "A new AuthTkt" do
       tkt.should eql 'NDI5NTUwZWM0ZWM1MDJlMmZlOGUwNDhjMThlOWY4MDgwMDAwMDNlOGd1ZXN0ISE='
    end
 
+   it "should create ticket with sha1" do
+      atkt = ApacheAuthTkt.new({:secret => 'fee-fi-fo-fum', :digest_type => 'sha256'})
+      tkt = atkt.create_ticket(:timestamp => 1000)
+      tkt.should eql 'ZWRmMzllMmM2NWFmNjljOWZlY2U1OTJmODE0OTQ2M2U0NzI1NThiMDE2YmFjMzRiMjMwM2UzM2FmNDM0MzYzYzAwMDAwM2U4Z3Vlc3QhIQ=='
+   end
+
    it "should round-trip" do
       atkt = ApacheAuthTkt.new({:secret => 'fee-fi-fo-fum'})
       tkt = atkt.create_ticket(:timestamp => 1000)

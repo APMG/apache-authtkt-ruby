@@ -124,8 +124,11 @@ class ApacheAuthTkt
       if (@digest_type == 'md5')
          digest0 = Digest::MD5.hexdigest(raw)
          digest  = Digest::MD5.hexdigest(digest0 + @secret)
-      elsif (@digest_type == 'sha1')
-         # TODO
+      elsif (@digest_type == 'sha256')
+         digest0 = Digest::SHA256.hexdigest(raw)
+         digest  = Digest::SHA256.hexdigest(digest0 + @secret)
+      else 
+         raise "unsupported digest type: " + @digest_type
       end
       return digest
    end
