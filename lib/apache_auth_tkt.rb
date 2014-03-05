@@ -100,10 +100,10 @@ class ApacheAuthTkt
          :tokens     => '',
          :user_data  => '',
          :ignore_ip  => false,
-         :timestamp  => Time.now.to_i
+         :ts         => Time.now.to_i
       }.merge(user_opts)
 
-      timestamp  = options[:timestamp]
+      timestamp  = options[:ts]
       ip_address = options[:ignore_ip] ? '0.0.0.0' : @ipaddr
       digest = get_digest(timestamp, ip_address, options[:user], options[:tokens], options[:user_data])
       tkt = sprintf("%s%08x%s!%s!%s", digest, timestamp, options[:user], options[:tokens], options[:user_data])
@@ -116,11 +116,11 @@ class ApacheAuthTkt
 
    end
 
-   def get_digest(ts, ipaddr, uid, tokens, data)
+   def get_digest(ts, ipaddr, user, tokens, data)
       ipts = [ip2long(ipaddr), ts].pack("NN")
       digest0 = nil
       digest  = nil
-      raw     = ipts + @secret + uid + "\0" + tokens + "\0" + data
+      raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
       if (@digest_type == 'md5')
          digest0 = Digest::MD5.hexdigest(raw)
          digest  = Digest::MD5.hexdigest(digest0 + @secret)
@@ -142,7 +142,7 @@ class ApacheAuthTkt
       if (!parsed) 
           return false
       end
-      expected_digest = get_digest(parsed[:ts], ipaddr, parsed[:uid], parsed[:tokens], parsed[:data])
+      expected_digest = get_digest(parsed[:ts], ipaddr, parsed[:user], parsed[:tokens], parsed[:data])
       if (expected_digest == parsed[:digest])
          return parsed
       else
@@ -167,7 +167,7 @@ class ApacheAuthTkt
       if (packed = parts[0].match('^(.{32})(.{8})(.+)$'))
          parsed[:digest] = packed[1]
          parsed[:ts]     = packed[2].hex
-         parsed[:uid]    = packed[3]
+         parsed[:user]    = packed[3]
          if (parts.length == 3)
             parsed[:tokens] = parts[1]
             parsed[:data]   = parts[2]

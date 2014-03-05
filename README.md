@@ -24,7 +24,7 @@ Example usage:
 
     # validate an existing cookie ticket
     if (validated = atkt.validate_ticket(tkt))
-        puts 'user ' + validated[:uid] + ' is authenticated'
+        puts 'user ' + validated[:user] + ' is authenticated'
     end
 
 Licensed under Apache License 2.0.
