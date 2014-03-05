@@ -14,7 +14,7 @@ https://github.com/publicinsightnetwork/audience-insight-repository/blob/master/
 Example usage:
 
     require "apache_auth_tkt"
-    atkt = ApacheAuthTkt.new({:secret => 'fee-fi-fo-fum'})
+    atkt = ApacheAuthTkt.new(:secret => 'fee-fi-fo-fum')
     # create a ticket to set as a cookie
     tkt = atkt.create_ticket(
            :user => 'myusername',
