@@ -131,13 +131,51 @@ class ApacheAuthTkt
    end
 
    def validate_ticket(tkt, ipaddr='0.0.0.0')
-
-
+      decoded = tkt
+      if (@base64encode)
+         decoded = Base64.decode64(tkt)
+      end
+      parsed = parse_ticket(decoded)
+      if (!parsed) 
+          return false
+      end
+      expected_digest = get_digest(parsed[:ts], ipaddr, parsed[:uid], parsed[:tokens], parsed[:data])
+      if (expected_digest == parsed[:digest])
+         return parsed
+      else
+         return false
+      end
    end
 
    def parse_ticket(tkt)
-
-
+      # strip possible quotes
+      tkt = tkt.gsub("\"",'')
+      # sanity checks
+      if (tkt.length < 40)
+         @error = "ticket string too short"
+         return false
+      end
+      if (!tkt.index('!'))
+         @error = "ticket missing !"
+         return false
+      end
+      parts = tkt.split(/\!/)
+      parsed = {:tokens => '', :data => ''}
+      if (packed = parts[0].match('^(.{32})(.{8})(.+)$'))
+         parsed[:digest] = packed[1]
+         parsed[:ts]     = packed[2].hex
+         parsed[:uid]    = packed[3]
+         if (parts.length == 3)
+            parsed[:tokens] = parts[1]
+            parsed[:data]   = parts[2]
+         elsif (parts.length == 2)
+            parsed[:tokens] = parts[1]
+         end
+      else
+         @error = "invalid ticket pattern"
+         return false
+      end
+      return parsed
    end
 
 end
