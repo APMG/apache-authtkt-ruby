@@ -134,11 +134,7 @@ class ApacheAuthTkt
    end
 
    def validate_ticket(tkt, ipaddr='0.0.0.0')
-      decoded = tkt
-      if (@base64encode)
-         decoded = Base64.decode64(tkt)
-      end
-      parsed = parse_ticket(decoded)
+      parsed = parse_ticket(tkt)
       if (!parsed)
          return false
       end
@@ -151,13 +147,13 @@ class ApacheAuthTkt
    end
 
    def parse_ticket(tkt)
-      # test if base64 encoded before decoding
-      if (tkt.length % 4 == 0 && tkt =~ /^[A-Za-z0-9+\/=]+\Z/)
-         tkt = Base65.decode64(tkt)
-      end
-
-      # strip possible quotes lead/trail quotes
+      # strip possible lead/trail quotes
       tkt = tkt.gsub(/^"|"$/,'')
+
+      # test if base64 encoded before decoding
+      if (@base64encode && tkt.length % 4 == 0 && tkt =~ /^[A-Za-z0-9+\/=]+\Z/)
+         tkt = Base64.decode64(tkt)
+      end 
 
       # sanity checks
       if (tkt.length < 40)
