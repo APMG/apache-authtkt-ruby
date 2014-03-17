@@ -127,7 +127,7 @@ class ApacheAuthTkt
       elsif (@digest_type == 'sha256')
          digest0 = Digest::SHA256.hexdigest(raw)
          digest  = Digest::SHA256.hexdigest(digest0 + @secret)
-      else 
+      else
          raise "unsupported digest type: " + @digest_type
       end
       return digest
@@ -139,8 +139,8 @@ class ApacheAuthTkt
          decoded = Base64.decode64(tkt)
       end
       parsed = parse_ticket(decoded)
-      if (!parsed) 
-          return false
+      if (!parsed)
+         return false
       end
       expected_digest = get_digest(parsed[:ts], ipaddr, parsed[:user], parsed[:tokens], parsed[:data])
       if (expected_digest == parsed[:digest])
@@ -151,8 +151,14 @@ class ApacheAuthTkt
    end
 
    def parse_ticket(tkt)
-      # strip possible quotes
-      tkt = tkt.gsub("\"",'')
+      # test if base64 encoded before decoding
+      if (tkt.length % 4 == 0 && tkt =~ /^[A-Za-z0-9+\/=]+\Z/)
+         tkt = Base65.decode64(tkt)
+      end
+
+      # strip possible quotes lead/trail quotes
+      tkt = tkt.gsub(/^"|"$/,'')
+
       # sanity checks
       if (tkt.length < 40)
          @error = "ticket string too short"
@@ -162,6 +168,8 @@ class ApacheAuthTkt
          @error = "ticket missing !"
          return false
       end
+
+      # parse it
       parts = tkt.split(/\!/)
       parsed = {:tokens => '', :data => ''}
       if (packed = parts[0].match('^(.{32})(.{8})(.+)$'))
