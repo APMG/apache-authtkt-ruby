@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rspec/autorun'
 require "apache_auth_tkt"
+require "json"
 
 describe "A new AuthTkt" do
    it "should have sane defaults" do
@@ -41,4 +42,15 @@ describe "A new AuthTkt" do
       parsed[:tokens].should eql ''
       parsed[:data].should eql ''
    end
+
+   # json payload to test quotes bug
+   it "should not strip quotes" do
+      atkt = ApacheAuthTkt.new(:secret => 'fee-fi-fo-fum')
+      tkt = atkt.create_ticket(:ts => 1000, :user_data => JSON.generate({ 'foo' => 'bar' }))
+      parsed = atkt.validate_ticket(tkt)
+      #puts parsed
+      thawed = JSON.parse(parsed[:data])
+      #puts thawed.inspect
+   end
+   
 end
