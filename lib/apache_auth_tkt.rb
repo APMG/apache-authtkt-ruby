@@ -153,7 +153,7 @@ class ApacheAuthTkt
       # test if base64 encoded before decoding
       if (@base64encode && tkt.length % 4 == 0 && tkt =~ /^[A-Za-z0-9+\/=]+\Z/)
          tkt = Base64.decode64(tkt)
-      end 
+      end
 
       # sanity checks
       if (tkt.length < 40)
