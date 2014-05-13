@@ -54,7 +54,6 @@ describe ApacheAuthTkt do
       it 'should return false for recent tickets' do
          atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
          tkt = atkt.create_ticket
-         # expect(tkt).to eql 'NDI5NTUwZWM0ZWM1MDJlMmZlOGUwNDhjMThlOWY4MDgwMDAwMDNlOGd1ZXN0ISE='
 
          expect(atkt.expired?(tkt)).to be_false
       end
