@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "A new AuthTkt" do
+describe ApacheAuthTkt do
    it "should have sane defaults" do
       atkt = ApacheAuthTkt.new(:secret => 'fee-fi-fo-fum')
       #puts atkt.inspect
