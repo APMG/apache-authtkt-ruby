@@ -67,15 +67,15 @@ describe ApacheAuthTkt do
       end
 
       it 'should return true for old tickets given arbitrary lifetimes' do
-         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
-         tkt = atkt.create_ticket(lifetime: 10000, ts: Time.now.to_i-100001)
+         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', lifetime: 30000)
+         tkt = atkt.create_ticket(ts: Time.now.to_i-30002)
 
          expect(atkt.expired?(tkt)).to be_true
       end
 
       it 'should return false for new tickets given arbitrary lifetimes' do
-         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
-         tkt = atkt.create_ticket(lifetime: 10000, ts: Time.now.to_i-1000)
+         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', lifetime: 30000)
+         tkt = atkt.create_ticket(ts: Time.now.to_i-29990)
 
          expect(atkt.expired?(tkt)).to be_false
       end
