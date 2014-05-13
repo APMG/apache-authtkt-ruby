@@ -193,6 +193,7 @@ class ApacheAuthTkt
    end
 
    def expired?(tkt)
+      return false if @lifetime.nil?
       parsed = self.parse_ticket(tkt)
       !(parsed[:ts] + @lifetime >= Time.now.to_i)
    end
