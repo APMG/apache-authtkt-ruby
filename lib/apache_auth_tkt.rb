@@ -27,6 +27,7 @@ class ApacheAuthTkt
    attr_accessor :conf_file
    attr_accessor :error
    attr_accessor :base64encode
+   attr_accessor :lifetime
 
    def initialize(args)
 
@@ -62,6 +63,12 @@ class ApacheAuthTkt
          @base64encode = true
       end
 
+      if (args.has_key? :lifetime)
+         @lifetime = args[:lifetime]
+      else
+         # 8 hours.
+         @lifetime = 28800
+      end
 
    end
 
@@ -183,6 +190,11 @@ class ApacheAuthTkt
          return false
       end
       return parsed
+   end
+
+   def expired?(tkt)
+      parsed = self.parse_ticket(tkt)
+      !(parsed[:ts] + @lifetime >= Time.now.to_i)
    end
 
 end
