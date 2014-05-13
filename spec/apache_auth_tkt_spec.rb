@@ -1,7 +1,4 @@
-require 'rubygems'
-require 'rspec/autorun'
-require "apache_auth_tkt"
-require "json"
+require 'spec_helper'
 
 describe "A new AuthTkt" do
    it "should have sane defaults" do
@@ -13,7 +10,7 @@ describe "A new AuthTkt" do
    end
 
    it "should parse config for secret" do
-      atkt = ApacheAuthTkt.new(:conf_file => 'test/test.conf')
+      atkt = ApacheAuthTkt.new(:conf_file => 'spec/fixtures/test.conf')
       #puts atkt.inspect
       atkt.secret.should eql 'fee-fi-fo-fum'
    end
@@ -52,5 +49,23 @@ describe "A new AuthTkt" do
       thawed = JSON.parse(parsed[:data])
       #puts thawed.inspect
    end
-   
+
+   describe '#expired?' do
+      it 'should return false for recent tickets' do
+         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
+         tkt = atkt.create_ticket
+         # expect(tkt).to eql 'NDI5NTUwZWM0ZWM1MDJlMmZlOGUwNDhjMThlOWY4MDgwMDAwMDNlOGd1ZXN0ISE='
+
+         expect(atkt.expired?(tkt)).to be_false
+      end
+
+      it 'should return true for old tickets' do
+         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
+         tkt = atkt.create_ticket(ts: 1000)
+         expect(tkt).to eql 'NDI5NTUwZWM0ZWM1MDJlMmZlOGUwNDhjMThlOWY4MDgwMDAwMDNlOGd1ZXN0ISE='
+
+         expect(atkt.expired?(tkt)).to be_true
+      end
+   end
+
 end
