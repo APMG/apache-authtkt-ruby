@@ -18,6 +18,7 @@
 # dependencies
 require 'rubygems'
 require 'base64'
+require 'digest'
 
 class ApacheAuthTkt
 

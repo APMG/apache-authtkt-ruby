@@ -21,7 +21,7 @@ describe ApacheAuthTkt do
       tkt.should eql 'NDI5NTUwZWM0ZWM1MDJlMmZlOGUwNDhjMThlOWY4MDgwMDAwMDNlOGd1ZXN0ISE='
    end
 
-   it "should create ticket with sha1" do
+   it "should create ticket with sha256" do
       atkt = ApacheAuthTkt.new(:secret => 'fee-fi-fo-fum', :digest_type => 'sha256')
       tkt = atkt.create_ticket(:ts => 1000)
       tkt.should eql 'ZWRmMzllMmM2NWFmNjljOWZlY2U1OTJmODE0OTQ2M2U0NzI1NThiMDE2YmFjMzRiMjMwM2UzM2FmNDM0MzYzYzAwMDAwM2U4Z3Vlc3QhIQ=='
