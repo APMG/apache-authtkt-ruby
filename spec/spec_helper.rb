@@ -1,4 +1,4 @@
-require 'apache_auth_tkt'
+require 'apache_authtkt'
 require 'json'
 
 RSpec.configure do |config|
