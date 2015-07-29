@@ -13,13 +13,13 @@ https://github.com/publicinsightnetwork/audience-insight-repository/blob/master/
 
 Example usage:
 
-    require "apache_auth_tkt"
-    atkt = ApacheAuthTkt.new(:secret => 'fee-fi-fo-fum')
+    require "apache_authtkt"
+    atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
     # create a ticket to set as a cookie
     tkt = atkt.create_ticket(
-           :user => 'myusername',
-           :tokens => 'foo,bar,baz',
-           :user_data => 'some payload'
+           user: 'myusername',
+           tokens: 'foo,bar,baz',
+           user_data: 'some payload'
     )
 
     # validate an existing cookie ticket
@@ -28,4 +28,3 @@ Example usage:
     end
 
 Licensed under Apache License 2.0.
-
