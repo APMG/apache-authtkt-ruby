@@ -10,6 +10,6 @@ Gem::Specification.new do |s|
   s.email       = 'wjohnston@mpr.org'
   s.homepage    = 'https://github.com/APMG/apache-authtkt-ruby'
   s.files       = ['lib/apache_authtkt.rb']
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rake', '~> 10.4'
+  s.add_development_dependency 'rspec', '~> 3.3'
 end
