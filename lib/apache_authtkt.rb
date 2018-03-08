@@ -30,6 +30,12 @@ class ApacheAuthTkt
    attr_accessor :base64encode
    attr_accessor :lifetime
 
+   DIGEST_LENGTHS = {
+     'md5' => '32',
+     'sha256' => '64',
+     'sha512' => '128',
+   }
+
    def initialize(args)
 
       #puts args.inspect
@@ -129,12 +135,15 @@ class ApacheAuthTkt
       digest0 = nil
       digest  = nil
       raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
-      if (@digest_type == 'md5')
+      if (@digest_type.downcase == 'md5')
          digest0 = Digest::MD5.hexdigest(raw)
          digest  = Digest::MD5.hexdigest(digest0 + @secret)
-      elsif (@digest_type == 'sha256')
+      elsif (@digest_type.downcase == 'sha256')
          digest0 = Digest::SHA256.hexdigest(raw)
          digest  = Digest::SHA256.hexdigest(digest0 + @secret)
+      elsif (@digest_type.downcase == 'sha512')
+         digest0 = Digest::SHA512.hexdigest(raw)
+         digest  = Digest::SHA512.hexdigest(digest0 + @secret)
       else
          raise "unsupported digest type: " + @digest_type
       end
@@ -176,7 +185,8 @@ class ApacheAuthTkt
       # parse it
       parts = tkt.split(/\!/)
       parsed = {:tokens => '', :data => ''}
-      if (packed = parts[0].match('^(.{32})(.{8})(.+)$'))
+      digest_length = DIGEST_LENGTHS[@digest_type.downcase]
+      if (packed = parts[0].match("^(.{#{digest_length}})(.{8})(.+)$"))
          parsed[:digest] = packed[1]
          parsed[:ts]     = packed[2].hex
          parsed[:user]    = packed[3]

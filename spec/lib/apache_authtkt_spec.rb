@@ -26,13 +26,15 @@ describe ApacheAuthTkt do
   end
 
   it 'should round-trip' do
-    atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
-    tkt = atkt.create_ticket(ts: 1000)
-    parsed = atkt.validate_ticket(tkt)
-    expect(parsed[:user]).to eql 'guest'
-    expect(parsed[:ts]).to eql 1000
-    expect(parsed[:tokens]).to eql ''
-    expect(parsed[:data]).to eql ''
+    ['Md5', 'sHA256', 'SHa512'].each do |digest_type|
+      atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: digest_type)
+      tkt = atkt.create_ticket(ts: 1000)
+      parsed = atkt.validate_ticket(tkt)
+      expect(parsed[:user]).to eql 'guest'
+      expect(parsed[:ts]).to eql 1000
+      expect(parsed[:tokens]).to eql ''
+      expect(parsed[:data]).to eql ''
+    end
   end
 
   # json payload to test quotes bug
