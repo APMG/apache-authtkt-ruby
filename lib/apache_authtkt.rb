@@ -20,9 +20,8 @@ require 'rubygems'
 require 'base64'
 require 'digest'
 
-class InvalidDigestTypeError < StandardError; end
-
 class ApacheAuthTkt
+  class InvalidDigestTypeError < StandardError; end
 
    attr_accessor :secret
    attr_accessor :ipaddr

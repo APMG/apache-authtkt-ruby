@@ -41,7 +41,7 @@ describe ApacheAuthTkt do
     it 'dies on invalid digest type' do
       expect {
         atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: 'nope')
-      }.to raise_error(InvalidDigestTypeError)
+      }.to raise_error(ApacheAuthTkt::InvalidDigestTypeError)
     end
   end
 
