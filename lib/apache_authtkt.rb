@@ -20,6 +20,8 @@ require 'rubygems'
 require 'base64'
 require 'digest'
 
+class InvalidDigestTypeError < StandardError; end
+
 class ApacheAuthTkt
 
    attr_accessor :secret
@@ -63,6 +65,8 @@ class ApacheAuthTkt
       else
          @digest_type = 'md5'
       end
+
+      raise(InvalidDigestTypeError, @digest_type) unless DIGEST_LENGTHS[@digest_type.downcase]
 
       if (args.has_key? :base64encode)
          @base64encode = args[:base64encode]

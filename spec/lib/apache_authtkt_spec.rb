@@ -39,10 +39,9 @@ describe ApacheAuthTkt do
     end
 
     it 'dies on invalid digest type' do
-      atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: 'nope')
       expect {
-        tkt = atkt.create_ticket(ts: 1000)
-      }.to raise_error(LoadError)
+        atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: 'nope')
+      }.to raise_error(InvalidDigestTypeError)
     end
   end
 
