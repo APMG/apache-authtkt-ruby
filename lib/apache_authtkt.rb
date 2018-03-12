@@ -140,12 +140,8 @@ class ApacheAuthTkt
       digest  = nil
       raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
       digester = digest_klass(@digest_type)
-      begin
-        digest0 = digester.hexdigest(raw)
-        digest  = digester.hexdigest(digest0 + @secret)
-      rescue
-         raise "unsupported digest type: " + @digest_type
-      end
+      digest0 = digester.hexdigest(raw)
+      digest  = digester.hexdigest(digest0 + @secret)
       return digest
    end
 

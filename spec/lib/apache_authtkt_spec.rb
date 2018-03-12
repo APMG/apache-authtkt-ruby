@@ -37,6 +37,13 @@ describe ApacheAuthTkt do
         expect(parsed[:data]).to eql ''
       end
     end
+
+    it 'dies on invalid digest type' do
+      atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: 'nope')
+      expect {
+        tkt = atkt.create_ticket(ts: 1000)
+      }.to raise_error(LoadError)
+    end
   end
 
   # json payload to test quotes bug
