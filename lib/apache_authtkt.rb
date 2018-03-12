@@ -130,18 +130,13 @@ class ApacheAuthTkt
 
    end
 
-   def digest_klass(algo)
-     Object.const_get("Digest::#{algo.upcase}")
-   end
-
    def get_digest(ts, ipaddr, user, tokens, data)
       ipts = [ip2long(ipaddr), ts].pack("NN")
       digest0 = nil
       digest  = nil
       raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
-      digester = digest_klass(@digest_type)
-      digest0 = digester.hexdigest(raw)
-      digest  = digester.hexdigest(digest0 + @secret)
+      digest0 = digest_klass.hexdigest(raw)
+      digest  = digest_klass.hexdigest(digest0 + @secret)
       return digest
    end
 
@@ -207,4 +202,9 @@ class ApacheAuthTkt
       !(parsed[:ts] + @lifetime >= Time.now.to_i)
    end
 
+   private
+
+   def digest_klass
+     Digest.const_get(@digest_type.upcase)
+   end
 end
