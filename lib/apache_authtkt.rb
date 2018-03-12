@@ -31,9 +31,9 @@ class ApacheAuthTkt
    attr_accessor :lifetime
 
    DIGEST_LENGTHS = {
-     'md5' => '32',
-     'sha256' => '64',
-     'sha512' => '128',
+     'md5' => 32,
+     'sha256' => 64,
+     'sha512' => 128,
    }
 
    def initialize(args)
@@ -130,21 +130,20 @@ class ApacheAuthTkt
 
    end
 
+   def digest_klass(algo)
+     Object.const_get("Digest::#{algo.upcase}")
+   end
+
    def get_digest(ts, ipaddr, user, tokens, data)
       ipts = [ip2long(ipaddr), ts].pack("NN")
       digest0 = nil
       digest  = nil
       raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
-      if (@digest_type.downcase == 'md5')
-         digest0 = Digest::MD5.hexdigest(raw)
-         digest  = Digest::MD5.hexdigest(digest0 + @secret)
-      elsif (@digest_type.downcase == 'sha256')
-         digest0 = Digest::SHA256.hexdigest(raw)
-         digest  = Digest::SHA256.hexdigest(digest0 + @secret)
-      elsif (@digest_type.downcase == 'sha512')
-         digest0 = Digest::SHA512.hexdigest(raw)
-         digest  = Digest::SHA512.hexdigest(digest0 + @secret)
-      else
+      digester = digest_klass(@digest_type)
+      begin
+        digest0 = digester.hexdigest(raw)
+        digest  = digester.hexdigest(digest0 + @secret)
+      rescue
          raise "unsupported digest type: " + @digest_type
       end
       return digest
