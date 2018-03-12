@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'apache_authtkt'
-  s.version     = '2.0.0'
+  s.version     = '2.1.0'
   s.license     = 'Apache v2'
   s.date        = '2015-07-29'
   s.rubyforge_project = 'nowarning'

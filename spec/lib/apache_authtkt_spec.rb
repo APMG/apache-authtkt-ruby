@@ -25,14 +25,24 @@ describe ApacheAuthTkt do
     expect(tkt).to eql 'ZWRmMzllMmM2NWFmNjljOWZlY2U1OTJmODE0OTQ2M2U0NzI1NThiMDE2YmFjMzRiMjMwM2UzM2FmNDM0MzYzYzAwMDAwM2U4Z3Vlc3QhIQ=='
   end
 
-  it 'should round-trip' do
-    atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum')
-    tkt = atkt.create_ticket(ts: 1000)
-    parsed = atkt.validate_ticket(tkt)
-    expect(parsed[:user]).to eql 'guest'
-    expect(parsed[:ts]).to eql 1000
-    expect(parsed[:tokens]).to eql ''
-    expect(parsed[:data]).to eql ''
+  describe 'digest types' do
+    ['Md5', 'sHA256', 'SHa512'].each do |digest_type|
+      it "should round-trip #{digest_type}" do
+        atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: digest_type)
+        tkt = atkt.create_ticket(ts: 1000)
+        parsed = atkt.validate_ticket(tkt)
+        expect(parsed[:user]).to eql 'guest'
+        expect(parsed[:ts]).to eql 1000
+        expect(parsed[:tokens]).to eql ''
+        expect(parsed[:data]).to eql ''
+      end
+    end
+
+    it 'dies on invalid digest type' do
+      expect {
+        atkt = ApacheAuthTkt.new(secret: 'fee-fi-fo-fum', digest_type: 'nope')
+      }.to raise_error(ApacheAuthTkt::InvalidDigestTypeError)
+    end
   end
 
   # json payload to test quotes bug

@@ -21,6 +21,7 @@ require 'base64'
 require 'digest'
 
 class ApacheAuthTkt
+  class InvalidDigestTypeError < StandardError; end
 
    attr_accessor :secret
    attr_accessor :ipaddr
@@ -29,6 +30,12 @@ class ApacheAuthTkt
    attr_accessor :error
    attr_accessor :base64encode
    attr_accessor :lifetime
+
+   DIGEST_LENGTHS = {
+     'md5' => 32,
+     'sha256' => 64,
+     'sha512' => 128,
+   }
 
    def initialize(args)
 
@@ -57,6 +64,8 @@ class ApacheAuthTkt
       else
          @digest_type = 'md5'
       end
+
+      raise(InvalidDigestTypeError, @digest_type) unless DIGEST_LENGTHS[@digest_type.downcase]
 
       if (args.has_key? :base64encode)
          @base64encode = args[:base64encode]
@@ -129,15 +138,8 @@ class ApacheAuthTkt
       digest0 = nil
       digest  = nil
       raw     = ipts + @secret + user + "\0" + tokens + "\0" + data
-      if (@digest_type == 'md5')
-         digest0 = Digest::MD5.hexdigest(raw)
-         digest  = Digest::MD5.hexdigest(digest0 + @secret)
-      elsif (@digest_type == 'sha256')
-         digest0 = Digest::SHA256.hexdigest(raw)
-         digest  = Digest::SHA256.hexdigest(digest0 + @secret)
-      else
-         raise "unsupported digest type: " + @digest_type
-      end
+      digest0 = digest_klass.hexdigest(raw)
+      digest  = digest_klass.hexdigest(digest0 + @secret)
       return digest
    end
 
@@ -176,7 +178,8 @@ class ApacheAuthTkt
       # parse it
       parts = tkt.split(/\!/)
       parsed = {:tokens => '', :data => ''}
-      if (packed = parts[0].match('^(.{32})(.{8})(.+)$'))
+      digest_length = DIGEST_LENGTHS[@digest_type.downcase]
+      if (packed = parts[0].match("^(.{#{digest_length}})(.{8})(.+)$"))
          parsed[:digest] = packed[1]
          parsed[:ts]     = packed[2].hex
          parsed[:user]    = packed[3]
@@ -202,4 +205,9 @@ class ApacheAuthTkt
       !(parsed[:ts] + @lifetime >= Time.now.to_i)
    end
 
+   private
+
+   def digest_klass
+     Digest.const_get(@digest_type.upcase)
+   end
 end
