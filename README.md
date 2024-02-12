@@ -1,6 +1,8 @@
 apache-authtkt-ruby
 ===================
 
+**PLEASE NOTE: This library is deprecated and no longer supported.**
+
 Ruby client for mod_auth_tkt (http://www.openfusion.com.au/labs/mod_auth_tkt/).
 
 Inspired by http://meso.net/mod_auth_tkt yet implemented as a full class with
